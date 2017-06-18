@@ -106,14 +106,6 @@ class ContestAdmin extends CI_Controller {
 		redirect(site_url('ContestAdmin/index'));
 	}
 
-	function cmp($a, $b) {
-		$x = $a['total'];
-		$y = $b['total'];
-		if ($x>$y) return -1;
-		if ($x<$y) return -1;
-		else       return 0;
-	}
-
 	public function ranking($cid) {
 		$this->load->model('NeoContestSolution', 'Solution');
 
@@ -136,8 +128,31 @@ class ContestAdmin extends CI_Controller {
 
 		$this->load->view('ContestAdmin/ranking', array('data'=>$retv));
 	}
+
+	public function visualize($cid) {
+		$solutions = $this->db->get_where('solution', array('contest_id'=>$cid))->result();
+		usort($solutions, "cmp_time");
+		//echo json_encode($solutions);
+		$this->load->model('NeoContestSolution', 'Solution');
+		$users_raw = $this->Solution->allContestants($cid);
+		$users = array();
+		foreach ($users_raw as $u) {
+			$users[] = (object)array('user_id'=>$u->user_id, 'email'=>$u->email, 'nick'=>$u->nick, 'school'=>$u->school);
+		}
+		//echo json_encode($users);
+		$this->load->helper('url');
+		$this->load->view('ContestAdmin/visualize', array('solutions'=>$solutions, 'users'=>$users, 'sourceUrl'=>site_url('ContestAdmin/showSource/'), 'probUrl'=>'http://oj.lssh.tp.edu.tw/Theogony/problem.php?id='));
+	}
+
+	public function showSource($sid=null) {
+		if (!$sid) return show_404();
+		$this->load->model('NeoContestSolution', 'Solution');
+		$result = $this->Solution->source($sid);
+		//print_r($result);
+		$this->load->view('Contest/showSource', array('source'=>$result->source, 'solution_id'=>$result->solution_id));
+	}
 }
-	function cmp($a, $b) {
+	function cmp(&$a, &$b) {
 		$x = $a['total'];
 		$y = $b['total'];
 		if ($x>$y) return -1;
@@ -145,3 +160,10 @@ class ContestAdmin extends CI_Controller {
 		else       return 0;
 	}
 
+	function cmp_time(&$a, &$b) {
+		if ($a->in_date < $b->in_date) return -1;
+		if ($a->in_date > $b->in_date) return 1;
+		if ($a->problem_id < $b->problem_id) return -1;
+		if ($a->problem_id > $b->problem_id) return 1;
+		return 0;
+	}
