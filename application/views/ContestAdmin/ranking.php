@@ -83,12 +83,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<h1>ranking</h1>
 
 	<div id="body">
+		<a href="<?=site_url('ContestAdmin/visualize/'.$cid)?>">timeline visualize</a>
 		<table>
 			<tr><th>ID</th><th>Nick</th><th>total</th><?php
 				$abc = range('A','Z');
-				foreach (current($data) as $pnum=>$score) {
-					if ($pnum==='total'||$pnum==='nick') continue;
-					echo "<td>P".$abc[$pnum]."</td>";
+				if (count($data)>0) {
+					foreach (current($data) as $pnum=>$score) {
+						if ($pnum==='total'||$pnum==='nick') continue;
+						echo "<td>P".$abc[$pnum]."</td>";
+					}
 				}
 			?></tr>
 <?php foreach ($data as $user=>$scores) {

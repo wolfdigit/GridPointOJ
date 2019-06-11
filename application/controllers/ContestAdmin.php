@@ -126,10 +126,13 @@ class ContestAdmin extends CI_Controller {
 
 		uasort($retv, "cmp");
 
-		$this->load->view('ContestAdmin/ranking', array('data'=>$retv));
+		$this->load->view('ContestAdmin/ranking', array('data'=>$retv, 'cid'=>$cid));
 	}
 
 	public function visualize($cid) {
+		$cinfo = $this->db->get_where('contest', array('contest_id'=>$cid))->result();
+		//print_r($cinfo);
+		$cinfo = $cinfo[0];
 		$solutions = $this->db->get_where('solution', array('contest_id'=>$cid))->result();
 		usort($solutions, "cmp_time");
 		//echo json_encode($solutions);
@@ -141,7 +144,7 @@ class ContestAdmin extends CI_Controller {
 		}
 		//echo json_encode($users);
 		$this->load->helper('url');
-		$this->load->view('ContestAdmin/visualize', array('solutions'=>$solutions, 'users'=>$users, 'sourceUrl'=>site_url('ContestAdmin/showSource/'), 'probUrl'=>'http://oj.lssh.tp.edu.tw/Theogony/problem.php?id='));
+		$this->load->view('ContestAdmin/visualize', array('solutions'=>$solutions, 'users'=>$users, 'sourceUrl'=>site_url('ContestAdmin/showSource/'), 'probUrl'=>'http://oj.lssh.tp.edu.tw/Theogony/problem.php?id=', 'cinfo'=>$cinfo));
 	}
 
 	public function showSource($sid=null) {

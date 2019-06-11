@@ -20,7 +20,7 @@ div.event a {
 	text-decoration: none;
 }
 </style>
-<div id="legend" style="position:fixed; height:20px; top:20px; left:10em; z-index:100; background-color:white; border-radius:5px; border:1px solid black; padding:4px">color: </div>
+<div id="legend" style="position:fixed; height:20px; top:20px; left:10em; z-index:100; background-color:white; border-radius:5px; border:1px solid black; padding:4px"><?=$cinfo->title?>: </div>
 <div id="listHead" style="position:fixed; width:10em; height:720px; top:50px; left:0; z-index:99; background-color:#CCF"></div>
 <script>
 window.addEventListener("scroll", function() {
@@ -46,6 +46,7 @@ for (var i=0; i<users.length; i++) {
 	userOrder[users[i].user_id] = i;
 }
 
+/*
 var minTime = new Date();
 var maxTime = new Date('2000/1/1');
 for (var i=0; i<data.length; i++) {
@@ -53,14 +54,17 @@ for (var i=0; i<data.length; i++) {
 	if (data[i].in_date<minTime) minTime = data[i].in_date;
 	if (data[i].in_date>maxTime) maxTime = data[i].in_date;
 }
+*/
+var minTime = new Date('<?=$cinfo->start_time?>');
+var maxTime = new Date('<?=$cinfo->end_time?>');
 //console.log(minTime);
 //console.log(maxTime);
 var timeLength = maxTime - minTime;
-document.getElementById("canvas").style.width = timeLength/1000/30 +1 + "em";
+document.getElementById("canvas").style.width = timeLength/1000/60 +1 + "em";
 
 
 function getX(inDate) {
-	return (inDate-minTime) / 1000 / 30 + "em";
+	return (inDate-minTime) / 1000 / 60 + "em";
 }
 function getY(uid, pid=0) {
 	return (userOrder[uid]+0.5)/users.length * 720 + pid%3*10 + "px";

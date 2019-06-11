@@ -59,7 +59,7 @@ class NeoContestSolution extends CI_Model {
 	}
 
 	function allContestants($cid) {
-		$res = $this->db->select('users.*')->distinct()->join('users', 'users.user_id=solution.user_id')->get_where('solution', array('contest_id'=>$cid))->result();
+		$res = $this->db->select('users.*')->distinct()->join('users', 'users.user_id=solution.user_id')->join('privilege', 'privilege.user_id=users.user_id AND privilege.rightstr=\'invisible\'', 'left')->where('privilege.defunct <>', 'N')->get_where('solution', array('contest_id'=>$cid))->result();
 		return $res;
 	}
 
