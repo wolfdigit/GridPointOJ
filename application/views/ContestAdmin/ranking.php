@@ -85,22 +85,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div id="body">
 		<a href="<?=site_url('ContestAdmin/visualize/'.$cid)?>">timeline visualize</a>
 		<table>
-			<tr><th>ID</th><th>Nick</th><th>total</th><?php
+			<tr><th>#</th><th>ID</th><th>Nick</th><th>total</th><th>time (no penalty)</th><?php
 				$abc = range('A','Z');
 				if (count($data)>0) {
 					foreach (current($data) as $pnum=>$score) {
-						if ($pnum==='total'||$pnum==='nick') continue;
+						if ($pnum==='total'||$pnum==='nick'||$pnum==='totalTime') continue;
 						echo "<td>P".$abc[$pnum]."</td>";
 					}
 				}
 			?></tr>
-<?php foreach ($data as $user=>$scores) {
+<?php 
+	$cnt = 1;
+	foreach ($data as $user=>$scores) {
 	$total = $scores['total'];
 	$nick = $scores['nick']; ?>
 			<tr>
-			<th><?=$user?></th><td><?=$nick?></td><td class="total"><?=$scores['total']?></td>
+			<th><?=$cnt++?></th><th><?=$user?></th><td><?=$nick?></td><td class="total"><?=$scores['total']?></td><td><?=ceil($scores['totalTime']/60)?></td>
 <?php	foreach ($scores as $pnum=>$score) {
-		if ($pnum==='total'||$pnum==='nick') continue;
+		if ($pnum==='total'||$pnum==='nick'||$pnum==='totalTime') continue;
 		echo "<td>$score</td>";
 	} ?>
 			</tr>

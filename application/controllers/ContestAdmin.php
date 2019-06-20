@@ -108,19 +108,26 @@ class ContestAdmin extends CI_Controller {
 
 	public function ranking($cid) {
 		$this->load->model('NeoContestSolution', 'Solution');
+		$this->load->model('NeoContest', 'Contest');
+		$contest = $this->Contest->info($cid);
+		//print_r($contest);
+		$sTime = strtotime($contest->start_time);
+		//print_r($sTime);
 
 
 		$retv = array();
 		$users = $this->Solution->allContestants($cid);
 		//print_r($users);
 		foreach ($users as $u) {
-			$retv[$u->user_id] = array('total'=>0, 'nick'=>$u->nick);
+			$retv[$u->user_id] = array('total'=>0, 'nick'=>$u->nick, 'totalTime'=>0);
 			$grpRuns = $this->Solution->grpRuns($cid, $u->user_id);
 			//print_r($grpRuns);
 			foreach ($grpRuns as $pnum=>$subs) {
 				//echo $u->user_id." p$pnum: ".$subs['max']."<br>";
 				$retv[$u->user_id][$pnum] = $subs['max'];
 				$retv[$u->user_id]['total'] += $subs['max'];
+				if ($subs['maxInDate']!='')
+					$retv[$u->user_id]['totalTime'] += strtotime($subs['maxInDate'])-$sTime;
 			}
 		}
 
@@ -156,11 +163,11 @@ class ContestAdmin extends CI_Controller {
 	}
 }
 	function cmp(&$a, &$b) {
-		$x = $a['total'];
-		$y = $b['total'];
-		if ($x>$y) return -1;
-		if ($x<$y) return 1;
-		else       return 0;
+		if ($a['total']>$b['total']) return -1;
+		if ($a['total']<$b['total']) return 1;
+		if ($a['totalTime']<$b['totalTime']) return -1;
+		if ($a['totalTime']>$b['totalTime']) return 1;
+		return 0;
 	}
 
 	function cmp_time(&$a, &$b) {
